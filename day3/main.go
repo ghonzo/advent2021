@@ -27,17 +27,15 @@ func part1(entries []string, bits int) int {
 			}
 		}
 	}
-	var sum1, sum2 int
+	var gamma int
 	for i := 0; i < bits; i++ {
-		sum1 = sum1 << 1
-		sum2 = sum2 << 1
-		if b[i] > len(entries)/2 {
-			sum1++
-		} else {
-			sum2++
+		gamma <<= 1
+		if b[i]*2 > len(entries) {
+			gamma++
 		}
 	}
-	return sum1 * sum2
+	epsilon := gamma ^ ((1 << bits) - 1)
+	return gamma * epsilon
 }
 
 func part2(entries []string, bits int) int64 {
@@ -57,23 +55,19 @@ func part2(entries []string, bits int) int64 {
 }
 
 func whittle(entries []string, bits int, pos int, b bool) []string {
-	originalLen := len(entries)
-	sum := 0
+	ones := 0
+	e0 := make([]string, 0)
+	e1 := make([]string, 0)
 	for _, e := range entries {
 		if e[pos] == '1' {
-			sum++
-		}
-	}
-	for i := len(entries) - 1; i >= 0; i-- {
-		if b {
-			if (sum*2 >= originalLen && entries[i][pos] == '0') || (sum*2 < originalLen && entries[i][pos] == '1') {
-				entries = append(entries[:i], entries[i+1:]...)
-			}
+			ones++
+			e1 = append(e1, e)
 		} else {
-			if (sum*2 < originalLen && entries[i][pos] == '0') || (sum*2 >= originalLen && entries[i][pos] == '1') {
-				entries = append(entries[:i], entries[i+1:]...)
-			}
+			e0 = append(e0, e)
 		}
 	}
-	return entries
+	if (b && ones*2 >= len(entries)) || (!b && ones*2 < len(entries)) {
+		return e1
+	}
+	return e0
 }
