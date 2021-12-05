@@ -21,30 +21,23 @@ func main() {
 
 func part1(entries []string) int {
 	grid := make(map[common.Point]int)
-	r := regexp.MustCompile("(\\d+),(\\d+) -> (\\d+),(\\d+)")
+	r := regexp.MustCompile(`(\d+),(\d+) -> (\d+),(\d+)`)
 	for _, line := range entries {
 		groups := r.FindStringSubmatch(line)
 		x0 := atoi(groups[1])
 		y0 := atoi(groups[2])
 		x1 := atoi(groups[3])
 		y1 := atoi(groups[4])
-		if x0 == x1 {
-			if y0 > y1 {
-				y0, y1 = y1, y0
-			}
-			for y := y0; y <= y1; y++ {
-				p := common.NewPoint(x0, y)
-				grid[p] = grid[p] + 1
-			}
-		} else if y0 == y1 {
-			if x0 > x1 {
-				x0, x1 = x1, x0
-			}
-			for x := x0; x <= x1; x++ {
-				p := common.NewPoint(x, y0)
-				grid[p] = grid[p] + 1
-			}
+		xd := sgn(x1 - x0)
+		yd := sgn(y1 - y0)
+		// Discard diagonal lines
+		if xd != 0 && yd != 0 {
+			continue
 		}
+		for x, y := x0, y0; y != y1 || x != x1; x, y = x+xd, y+yd {
+			grid[common.NewPoint(x, y)]++
+		}
+		grid[common.NewPoint(x1, y1)]++
 	}
 	var sum int
 	for _, v := range grid {
@@ -72,7 +65,7 @@ func sgn(a int) int {
 
 func part2(entries []string) int {
 	grid := make(map[common.Point]int)
-	r := regexp.MustCompile("(\\d+),(\\d+) -> (\\d+),(\\d+)")
+	r := regexp.MustCompile(`(\d+),(\d+) -> (\d+),(\d+)`)
 	for _, line := range entries {
 		groups := r.FindStringSubmatch(line)
 		x0 := atoi(groups[1])
@@ -81,14 +74,10 @@ func part2(entries []string) int {
 		y1 := atoi(groups[4])
 		xd := sgn(x1 - x0)
 		yd := sgn(y1 - y0)
-		for x, y := x0, y0; y != y1 || x != x1; {
-			p := common.NewPoint(x, y)
-			grid[p] = grid[p] + 1
-			x += xd
-			y += yd
+		for x, y := x0, y0; y != y1 || x != x1; x, y = x+xd, y+yd {
+			grid[common.NewPoint(x, y)]++
 		}
-		p := common.NewPoint(x1, y1)
-		grid[p] = grid[p] + 1
+		grid[common.NewPoint(x1, y1)]++
 	}
 	var sum int
 	for _, v := range grid {
