@@ -41,9 +41,12 @@ func part1(entries []string) int {
 	return sum
 }
 
+type basin map[common.Point]bool
+
 func part2(entries []string) int {
 	grid := common.ArraysGridFromLines(entries)
-	basins := make([]map[common.Point]bool, 0)
+	var basins []basin
+	// Even though it's the same type as basin, we think of it differently
 	foundPoints := make(map[common.Point]bool)
 	for pt := range grid.AllPoints() {
 		if foundPoints[pt] {
@@ -53,11 +56,11 @@ func part2(entries []string) int {
 		if grid.Get(pt) == '9' {
 			continue
 		}
-		basin := make(map[common.Point]bool)
-		basin[pt] = true
-		expandBasin(basin, grid)
-		basins = append(basins, basin)
-		for k, _ := range basin {
+		b := make(basin)
+		expandBasin(b, pt, grid)
+		basins = append(basins, b)
+		// Add all the points in the basin to "foundPoints"
+		for k := range b {
 			foundPoints[k] = true
 		}
 	}
@@ -69,27 +72,12 @@ func part2(entries []string) int {
 	return sizes[0] * sizes[1] * sizes[2]
 }
 
-func expandBasin(b map[common.Point]bool, g common.Grid) {
-	size0 := len(b)
-	pointsToAdd := make([]common.Point, 0)
-	for pt, _ := range b {
-		if v, ok := g.CheckedGet(pt.Add(common.N)); ok && v < '9' {
-			pointsToAdd = append(pointsToAdd, pt.Add(common.N))
-		}
-		if v, ok := g.CheckedGet(pt.Add(common.E)); ok && v < '9' {
-			pointsToAdd = append(pointsToAdd, pt.Add(common.E))
-		}
-		if v, ok := g.CheckedGet(pt.Add(common.S)); ok && v < '9' {
-			pointsToAdd = append(pointsToAdd, pt.Add(common.S))
-		}
-		if v, ok := g.CheckedGet(pt.Add(common.W)); ok && v < '9' {
-			pointsToAdd = append(pointsToAdd, pt.Add(common.W))
-		}
-	}
-	for _, pt := range pointsToAdd {
+func expandBasin(b basin, pt common.Point, grid common.Grid) {
+	if v, ok := grid.CheckedGet(pt); ok && v < '9' && !b[pt] {
 		b[pt] = true
-	}
-	if len(b) > size0 {
-		expandBasin(b, g)
+		expandBasin(b, pt.Add(common.N), grid)
+		expandBasin(b, pt.Add(common.E), grid)
+		expandBasin(b, pt.Add(common.S), grid)
+		expandBasin(b, pt.Add(common.W), grid)
 	}
 }
