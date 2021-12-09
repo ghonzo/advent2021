@@ -197,7 +197,17 @@ func ReadArraysGrid(r io.Reader) *ArraysGrid {
 	var grid ArraysGrid
 	input := bufio.NewScanner(r)
 	for input.Scan() {
-		grid = append(grid, input.Bytes())
+		grid = append(grid, []byte(input.Text()))
+	}
+	return &grid
+}
+
+// ArraysGridFromLines parses the lines and created a Grid with the y-dimension given by the number of lines
+// and the x-dimension given by the length of the first line.
+func ArraysGridFromLines(lines []string) *ArraysGrid {
+	grid := make(ArraysGrid, len(lines))
+	for i, line := range lines {
+		grid[i] = []byte(line)
 	}
 	return &grid
 }
