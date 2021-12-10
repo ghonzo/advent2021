@@ -8,9 +8,9 @@ import (
 	"github.com/ghonzo/advent2021/common"
 )
 
-// Day 10:
-// Part 1 answer:
-// Part 2 answer:
+// Day 10: Syntax Scoring
+// Part 1 answer: 167379
+// Part 2 answer: 2776842859
 func main() {
 	fmt.Println("Advent of Code 2021, Day 10")
 	entries := common.ReadStringsFromFile("input.txt")
@@ -53,8 +53,8 @@ lines:
 	return sum
 }
 
-func part2(entries []string) uint64 {
-	var scores []uint64
+func part2(entries []string) int {
+	var scores []int
 lines:
 	for _, line := range entries {
 		var stack []rune
@@ -80,7 +80,7 @@ lines:
 				stack = append(stack, r)
 			}
 		}
-		var sum uint64
+		var sum int
 		for i := len(stack) - 1; i >= 0; i-- {
 			sum *= 5
 			switch stack[i] {
@@ -98,11 +98,11 @@ lines:
 		}
 		scores = append(scores, sum)
 	}
-	sort.Slice(scores, func(i, j int) bool { return scores[i] < scores[j] })
-	//sort.Ints(scores)
+	sort.Ints(scores)
 	return scores[len(scores)/2]
 }
 
+// Pops the last value off the stack
 func pop(s *[]rune) rune {
 	n := len(*s) - 1
 	v := (*s)[n]
