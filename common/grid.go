@@ -108,6 +108,18 @@ var (
 // directions around a point. Does not include "center" or "zero"
 var AllDirections = []Point{UL, U, UR, L, R, DL, D, DR}
 
+// SurroundingPoints returns a channel of all the points (8 of them) that surround the given point
+func (p Point) SurroundingPoints() <-chan Point {
+	ch := make(chan Point)
+	go func() {
+		for _, d := range AllDirections {
+			ch <- p.Add(d)
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Grid represents a mutable 2D rectangle with a value at each integer coordinate
 type Grid interface {
 	Size() Point
