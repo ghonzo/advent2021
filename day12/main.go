@@ -9,17 +9,28 @@ import (
 	"github.com/ghonzo/advent2021/common"
 )
 
-// Day 12:
-// Part 1 answer:
-// Part 2 answer:
+// Day 12: Passage Pathing
+// Part 1 answer: 3495
+// Part 2 answer: 94849
 func main() {
 	fmt.Println("Advent of Code 2021, Day 12")
 	entries := common.ReadStringsFromFile("input.txt")
 	fmt.Printf("Part 1: %d \n", part1(entries))
-	//fmt.Printf("Part 2: %d \n", part2(entries))
+	fmt.Printf("Part 2: %d \n", part2(entries))
 }
 
 func part1(entries []string) int {
+	start := readNodes(entries)
+	return len(findPaths(path{start}, canVisit))
+}
+
+func part2(entries []string) int {
+	start := readNodes(entries)
+	return len(findPaths(path{start}, canVisit2))
+}
+
+// Reads the "node map" and returns the start node
+func readNodes(entries []string) *node {
 	nodemap := make(map[string]*node)
 	for _, line := range entries {
 		parts := strings.Split(line, "-")
@@ -36,8 +47,7 @@ func part1(entries []string) int {
 		left.connected = append(left.connected, right)
 		right.connected = append(right.connected, left)
 	}
-	start := path{nodemap["start"]}
-	return len(findPaths(start))
+	return nodemap["start"]
 }
 
 type node struct {
@@ -51,29 +61,60 @@ func (n *node) isBig() bool {
 
 type path []*node
 
-func (p path) canVisit(n *node) bool {
-	for _, stop := range p {
-		if stop == n {
-			return n.isBig()
+// Returns true if we can visit this node without violating rules (part 1)
+func canVisit(p path, n *node) bool {
+	if n.isBig() {
+		return true
+	}
+	for _, cave := range p {
+		if cave == n {
+			return false
 		}
 	}
 	return true
 }
 
-func (p path) lastNode() *node {
-	return p[len(p)-1]
-}
-
-func findPaths(p path) []path {
-	last := p.lastNode()
+// Returns all the "next step" paths
+func findPaths(p path, visitFunc func(path, *node) bool) []path {
+	last := p[len(p)-1]
+	// Recursion terminator
 	if last.label == "end" {
 		return []path{p}
 	}
 	var allPaths []path
 	for _, n := range last.connected {
-		if p.canVisit(n) {
-			allPaths = append(allPaths, findPaths(append(p, n))...)
+		if visitFunc(p, n) {
+			allPaths = append(allPaths, findPaths(append(p, n), visitFunc)...)
 		}
 	}
 	return allPaths
+}
+
+// Returns true if we can visit this node without violating rules (part 2)
+func canVisit2(p path, n *node) bool {
+	if n.label == "start" {
+		return false
+	}
+	if n.isBig() {
+		return true
+	}
+	for _, cave := range p {
+		if cave == n {
+			return !p.hasSmallTwice()
+		}
+	}
+	return true
+}
+
+func (p path) hasSmallTwice() bool {
+	visited := make(map[*node]bool)
+	for _, n := range p {
+		if !n.isBig() {
+			if visited[n] {
+				return true
+			}
+			visited[n] = true
+		}
+	}
+	return false
 }
