@@ -34,7 +34,7 @@ func Test_part2(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want uint64
+		want int
 	}{
 		{"example", args{common.ReadStringsFromFile("testdata/example.txt")}, 2188189693529},
 	}
