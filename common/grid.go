@@ -138,7 +138,6 @@ type Grid interface {
 	Get(coord Point) byte
 	CheckedGet(coord Point) (v byte, ok bool)
 	Set(coord Point, b byte)
-	Count(b byte) int
 	AllPoints() <-chan Point
 	Clone() Grid
 }
@@ -178,17 +177,6 @@ func (g *ArraysGrid) Set(coord Point, b byte) {
 	(*g)[coord.y][coord.x] = b
 }
 
-// Count the number of points in the Grid that have the given value.
-func (g *ArraysGrid) Count(b byte) int {
-	var count int
-	for pt := range g.AllPoints() {
-		if g.Get(pt) == b {
-			count++
-		}
-	}
-	return count
-}
-
 // Clone returns a copy of the Grid, leaving the original untouched.
 func (g *ArraysGrid) Clone() Grid {
 	size := g.Size()
@@ -215,6 +203,24 @@ func (g *ArraysGrid) AllPoints() <-chan Point {
 	return ch
 }
 
+// Count returns the number of instances of the given value in the grid
+func Count(grid Grid, v byte) int {
+	var count int
+	for pt := range grid.AllPoints() {
+		if grid.Get(pt) == v {
+			count++
+		}
+	}
+	return count
+}
+
+// MapGridValues applies a mapping function to each value in the grid
+func MapGridValues(grid Grid, mapFunc func(v byte) byte) {
+	for pt := range grid.AllPoints() {
+		grid.Set(pt, mapFunc(grid.Get(pt)))
+	}
+}
+
 // ReadArraysGrid parses the lines and created a Grid with the y-dimension given by the number of lines
 // and the x-dimension given by the length of the first line.
 func ReadArraysGrid(r io.Reader) *ArraysGrid {
@@ -232,6 +238,15 @@ func ArraysGridFromLines(lines []string) *ArraysGrid {
 	grid := make(ArraysGrid, len(lines))
 	for i, line := range lines {
 		grid[i] = []byte(line)
+	}
+	return &grid
+}
+
+// NewArraysGrid initializes an empty grid with the given size.
+func NewArraysGrid(x, y int) *ArraysGrid {
+	grid := make(ArraysGrid, y)
+	for row := range grid {
+		grid[row] = make([]byte, x)
 	}
 	return &grid
 }
