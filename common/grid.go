@@ -120,6 +120,18 @@ func (p Point) SurroundingPoints() <-chan Point {
 	return ch
 }
 
+// SurroundingCardinals returns a channel of all the points (4 of them) that surround the given point in cardinal directions
+func (p Point) SurroundingCardinals() <-chan Point {
+	ch := make(chan Point)
+	go func() {
+		for _, d := range []Point{R, D, L, U} {
+			ch <- p.Add(d)
+		}
+		close(ch)
+	}()
+	return ch
+}
+
 // Grid represents a mutable 2D rectangle with a value at each integer coordinate
 type Grid interface {
 	Size() Point
