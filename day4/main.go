@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/ghonzo/advent2021/common"
@@ -32,7 +31,7 @@ func part1(entries []string) int {
 	}
 	// Now draw the numbers
 	for _, num := range numbers {
-		v, _ := strconv.Atoi(num)
+		v := common.Atoi(num)
 		for _, b := range boards {
 			if b.Cover(v) {
 				return b.SumUnmarked() * v
@@ -53,7 +52,7 @@ func part2(entries []string) int {
 	// Now draw the numbers
 	winners := make(map[int]bool)
 	for _, num := range numbers {
-		v, _ := strconv.Atoi(num)
+		v := common.Atoi(num)
 		for num, b := range boards {
 			if b.Cover(v) {
 				winners[num] = true
@@ -77,8 +76,7 @@ func createBoard(lines []string) *Board {
 	var b Board
 	for row, line := range lines {
 		for col, numStr := range strings.Fields(line) {
-			val, _ := strconv.Atoi(numStr)
-			b[row][col] = &Space{val: val}
+			b[row][col] = &Space{val: common.Atoi(numStr)}
 		}
 	}
 	return &b

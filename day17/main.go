@@ -4,6 +4,8 @@ package main
 import (
 	"fmt"
 	"math"
+
+	"github.com/ghonzo/advent2021/common"
 )
 
 // Day 17: Trick Shot
@@ -23,17 +25,13 @@ type rect struct {
 
 func part1(target rect) int {
 	vxMin, vxMax, vyMin, vyMax := vRange(target)
-	var maxY int
+	mmY := new(common.MaxMin)
 	for vx := vxMin; vx <= vxMax; vx++ {
 		for vy := vyMin; vy <= vyMax; vy++ {
-			my := fire(vx, vy, target)
-			if my > maxY {
-				maxY = my
-			}
-
+			mmY.Accept(fire(vx, vy, target))
 		}
 	}
-	return maxY
+	return mmY.Max
 }
 
 func part2(target rect) int {
@@ -68,30 +66,18 @@ const missed = math.MinInt
 
 // Returns the maximum height reached, or "missed" if it didn't hit the range
 func fire(vx, vy int, target rect) int {
-	var maxY int
+	mmY := new(common.MaxMin)
 	var x, y int
 	for x <= target.x1 && y >= target.y0 {
 		x += vx
 		y += vy
-		if y > maxY {
-			maxY = y
-		}
+		mmY.Accept(y)
 		if x >= target.x0 && x <= target.x1 && y >= target.y0 && y <= target.y1 {
 			// Hit!
-			return maxY
+			return mmY.Max
 		}
-		vx -= sgn(vx)
+		vx -= common.Sgn(vx)
 		vy--
 	}
 	return missed
-}
-
-func sgn(a int) int {
-	switch {
-	case a < 0:
-		return -1
-	case a > 0:
-		return 1
-	}
-	return 0
 }

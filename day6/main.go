@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/ghonzo/advent2021/common"
@@ -22,7 +21,7 @@ func main() {
 func part1(s string) int {
 	fish := make([]int, 0)
 	for _, a := range strings.Split(s, ",") {
-		fish = append(fish, atoi(a))
+		fish = append(fish, common.Atoi(a))
 	}
 	for i := 0; i < 80; i++ {
 		fish = cycle(fish)
@@ -40,11 +39,6 @@ func cycle(fish []int) []int {
 		}
 	}
 	return next
-}
-
-func atoi(s string) int {
-	i, _ := strconv.Atoi(s)
-	return i
 }
 
 func part2(s string) uint64 {
@@ -71,7 +65,7 @@ func part2(s string) uint64 {
 	// Now we know how long it takes for all of them
 	var sum uint64
 	for _, a := range strings.Split(s, ",") {
-		sum += iter256[atoi(a)]
+		sum += iter256[common.Atoi(a)]
 	}
 	return sum
 }

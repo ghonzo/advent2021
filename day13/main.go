@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/ghonzo/advent2021/common"
@@ -34,21 +33,16 @@ func parseInstructions(entries []string) (pointset, []fold) {
 			break
 		}
 		parts := strings.Split(s, ",")
-		points[common.NewPoint(atoi(parts[0]), atoi(parts[1]))] = true
+		points[common.NewPoint(common.Atoi(parts[0]), common.Atoi(parts[1]))] = true
 	}
 	var folds []fold
 	for _, s = range entries[i+1:] {
 		eqIndex := strings.IndexRune(s, '=')
 		dim := s[eqIndex-1 : eqIndex]
-		mag := atoi(s[eqIndex+1:])
+		mag := common.Atoi(s[eqIndex+1:])
 		folds = append(folds, fold{dim, mag})
 	}
 	return points, folds
-}
-
-func atoi(s string) int {
-	i, _ := strconv.Atoi(s)
-	return i
 }
 
 type pointset map[common.Point]bool
@@ -77,18 +71,15 @@ func part2(entries []string) {
 	for _, f := range folds {
 		points = foldPoints(points, f)
 	}
-	var maxX, maxY int
+	mmX := new(common.MaxMin)
+	mmY := new(common.MaxMin)
 	for p := range points {
-		if p.X() > maxX {
-			maxX = p.X()
-		}
-		if p.Y() > maxY {
-			maxY = p.Y()
-		}
+		mmX.Accept(p.X())
+		mmY.Accept(p.Y())
 	}
-	for y := 0; y <= maxY; y++ {
+	for y := 0; y <= mmY.Max; y++ {
 		fmt.Println()
-		for x := 0; x <= maxX; x++ {
+		for x := 0; x <= mmX.Max; x++ {
 			if points[common.NewPoint(x, y)] {
 				fmt.Print("#")
 			} else {

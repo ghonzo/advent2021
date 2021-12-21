@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/ghonzo/advent2021/common"
@@ -24,7 +23,7 @@ func part1(entries []string) int {
 	var x, y int
 	for _, e := range entries {
 		items := strings.Split(e, " ")
-		v, _ := strconv.Atoi(items[1])
+		v := common.Atoi(items[1])
 		switch items[0] {
 		case "forward":
 			x += v
@@ -42,7 +41,7 @@ func part2(entries []string) int {
 	var x, y, aim int
 	for _, e := range entries {
 		items := strings.Split(e, " ")
-		v, _ := strconv.Atoi(items[1])
+		v := common.Atoi(items[1])
 		switch items[0] {
 		case "forward":
 			x += v

@@ -7,6 +7,8 @@ import (
 	"math"
 	"strconv"
 	"strings"
+
+	"github.com/ghonzo/advent2021/common"
 )
 
 // Day 16: Packet Decoder
@@ -130,20 +132,12 @@ func evaluate(p packet) int {
 	case 2:
 		// minimum
 		return reduce(p.subs, math.MaxInt, func(a, b int) int {
-			if a < b {
-				return a
-			} else {
-				return b
-			}
+			return common.Min(a, b)
 		})
 	case 3:
 		// maximum
 		return reduce(p.subs, 0, func(a, b int) int {
-			if a > b {
-				return a
-			} else {
-				return b
-			}
+			return common.Max(a, b)
 		})
 	case 4:
 		// literal

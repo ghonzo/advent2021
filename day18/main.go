@@ -27,21 +27,15 @@ func part1(entries []string) int {
 }
 
 func part2(entries []string) int {
-	maxMag := 0
+	mm := new(common.MaxMin)
 	for i, a := range entries[:len(entries)-1] {
 		for _, b := range entries[i+1:] {
-			mag := addAndReduce(parse(a), parse(b)).magnitude()
-			if mag > maxMag {
-				maxMag = mag
-			}
+			mm.Accept(addAndReduce(parse(a), parse(b)).magnitude())
 			// Swap the order
-			mag = addAndReduce(parse(b), parse(a)).magnitude()
-			if mag > maxMag {
-				maxMag = mag
-			}
+			mm.Accept(addAndReduce(parse(b), parse(a)).magnitude())
 		}
 	}
-	return maxMag
+	return mm.Max
 }
 
 func parse(s string) *node {

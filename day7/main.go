@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/ghonzo/advent2021/common"
@@ -20,60 +19,41 @@ func main() {
 }
 
 func part1(s string) int {
-	var min, max int
+	mm := new(common.MaxMin)
 	crabs := make([]int, 0)
 	for _, ps := range strings.Split(s, ",") {
-		p := atoi(ps)
+		p := common.Atoi(ps)
 		crabs = append(crabs, p)
-		if p > max {
-			max = p
-		}
-		if p < min || min == 0 {
-			min = p
-		}
+		mm.Accept(p)
 	}
-	var mincost int
-	for meet := min; meet <= max; meet++ {
+	costMM := new(common.MaxMin)
+	for meet := mm.Min; meet <= mm.Max; meet++ {
 		var cost int
 		for _, p := range crabs {
 			cost += common.Abs(p - meet)
 		}
-		if cost < mincost || mincost == 0 {
-			mincost = cost
-		}
+		costMM.Accept(cost)
 	}
-	return mincost
+	return costMM.Min
 }
 
 func part2(s string) int {
-	var min, max int
+	mm := new(common.MaxMin)
 	crabs := make([]int, 0)
 	for _, ps := range strings.Split(s, ",") {
-		p := atoi(ps)
+		p := common.Atoi(ps)
 		crabs = append(crabs, p)
-		if p > max {
-			max = p
-		}
-		if p < min || min == 0 {
-			min = p
-		}
+		mm.Accept(p)
 	}
-	var mincost int
-	for meet := min; meet <= max; meet++ {
+	costMM := new(common.MaxMin)
+	for meet := mm.Min; meet <= mm.Max; meet++ {
 		var cost int
 		for _, p := range crabs {
 			cost += totalFuel(common.Abs(p - meet))
 		}
-		if cost < mincost || mincost == 0 {
-			mincost = cost
-		}
+		costMM.Accept(cost)
 	}
-	return mincost
-}
-
-func atoi(s string) int {
-	i, _ := strconv.Atoi(s)
-	return i
+	return costMM.Min
 }
 
 func totalFuel(n int) int {

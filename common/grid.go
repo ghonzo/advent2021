@@ -250,11 +250,3 @@ func NewArraysGrid(x, y int) *ArraysGrid {
 	}
 	return &grid
 }
-
-// Abs returns the absolute value
-func Abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}

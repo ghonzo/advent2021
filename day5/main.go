@@ -4,7 +4,6 @@ package main
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 
 	"github.com/ghonzo/advent2021/common"
 )
@@ -24,12 +23,12 @@ func part1(entries []string) int {
 	r := regexp.MustCompile(`(\d+),(\d+) -> (\d+),(\d+)`)
 	for _, line := range entries {
 		groups := r.FindStringSubmatch(line)
-		x0 := atoi(groups[1])
-		y0 := atoi(groups[2])
-		x1 := atoi(groups[3])
-		y1 := atoi(groups[4])
-		xd := sgn(x1 - x0)
-		yd := sgn(y1 - y0)
+		x0 := common.Atoi(groups[1])
+		y0 := common.Atoi(groups[2])
+		x1 := common.Atoi(groups[3])
+		y1 := common.Atoi(groups[4])
+		xd := common.Sgn(x1 - x0)
+		yd := common.Sgn(y1 - y0)
 		// Discard diagonal lines
 		if xd != 0 && yd != 0 {
 			continue
@@ -48,32 +47,17 @@ func part1(entries []string) int {
 	return sum
 }
 
-func atoi(s string) int {
-	i, _ := strconv.Atoi(s)
-	return i
-}
-
-func sgn(a int) int {
-	switch {
-	case a < 0:
-		return -1
-	case a > 0:
-		return 1
-	}
-	return 0
-}
-
 func part2(entries []string) int {
 	grid := make(map[common.Point]int)
 	r := regexp.MustCompile(`(\d+),(\d+) -> (\d+),(\d+)`)
 	for _, line := range entries {
 		groups := r.FindStringSubmatch(line)
-		x0 := atoi(groups[1])
-		y0 := atoi(groups[2])
-		x1 := atoi(groups[3])
-		y1 := atoi(groups[4])
-		xd := sgn(x1 - x0)
-		yd := sgn(y1 - y0)
+		x0 := common.Atoi(groups[1])
+		y0 := common.Atoi(groups[2])
+		x1 := common.Atoi(groups[3])
+		y1 := common.Atoi(groups[4])
+		xd := common.Sgn(x1 - x0)
+		yd := common.Sgn(y1 - y0)
 		for x, y := x0, y0; y != y1 || x != x1; x, y = x+xd, y+yd {
 			grid[common.NewPoint(x, y)]++
 		}

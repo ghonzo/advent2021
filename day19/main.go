@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/ghonzo/advent2021/common"
@@ -68,7 +67,7 @@ func parseScanners(entries []string) []scanner {
 			skip = true
 		} else {
 			n := strings.Split(line, ",")
-			curScanner.beacons = append(curScanner.beacons, point3d{atoi(n[0]), atoi(n[1]), atoi(n[2])})
+			curScanner.beacons = append(curScanner.beacons, point3d{common.Atoi(n[0]), common.Atoi(n[1]), common.Atoi(n[2])})
 		}
 	}
 	return append(scanners, curScanner)
@@ -186,17 +185,15 @@ outer:
 }
 
 func findMaxDistance(scanners []scanner) int {
-	max := 0
+	mm := new(common.MaxMin)
 	for i := 0; i < len(scanners)-1; i++ {
 		p1 := scanners[i].location
 		for j := i; j < len(scanners); j++ {
 			p2 := scanners[j].location
-			if distance := p1.sub(p2).manhattanDistance(); distance > max {
-				max = distance
-			}
+			mm.Accept(p1.sub(p2).manhattanDistance())
 		}
 	}
-	return max
+	return mm.Max
 }
 
 func (p1 point3d) sub(p2 point3d) point3d {
@@ -208,14 +205,14 @@ func (p1 point3d) add(p2 point3d) point3d {
 }
 
 func (p point3d) manhattanDistance() int {
-	return abs(p[0]) + abs(p[1]) + abs(p[2])
+	return common.Abs(p[0]) + common.Abs(p[1]) + common.Abs(p[2])
 }
 
 // This is kind of magicky
 func (p point3d) translated(t translationVector) point3d {
 	var tp point3d
 	for i := 0; i < 3; i++ {
-		tp[i] = p[abs(t[i])-1]
+		tp[i] = p[common.Abs(t[i])-1]
 		if t[i] < 0 {
 			tp[i] *= -1
 		}
@@ -223,18 +220,6 @@ func (p point3d) translated(t translationVector) point3d {
 	return tp
 }
 
-func atoi(s string) int {
-	i, _ := strconv.Atoi(s)
-	return i
-}
-
 func sqr(n int) int {
 	return n * n
-}
-
-func abs(n int) int {
-	if n < 0 {
-		return -n
-	}
-	return n
 }

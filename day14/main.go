@@ -3,7 +3,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/ghonzo/advent2021/common"
 )
@@ -77,15 +76,9 @@ func createRule(left string, right byte) Rule {
 
 // Range is the difference between the maximum and the minimum of the values
 func calculateRange(m map[byte]int) int {
-	min := math.MaxInt
-	max := 0
+	mm := new(common.MaxMin)
 	for _, v := range m {
-		if v < min {
-			min = v
-		}
-		if v > max {
-			max = v
-		}
+		mm.Accept(v)
 	}
-	return max - min
+	return mm.Max - mm.Min
 }
